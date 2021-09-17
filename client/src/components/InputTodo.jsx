@@ -12,6 +12,7 @@ const InputTodo = () => {
         body:JSON.stringify(body)
       }
       const response = await fetch("http://localhost:5000/todos",bodyFile);
+      console.log(response);
       window.location = "/";
     } catch (err) {
       console.error(err.message)
