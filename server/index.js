@@ -21,13 +21,54 @@ app.post("/todos",async (req,res) => {
         console.error(err.message);
     }
 });
-//Get All Todo
 
+//Get All Todo
+app.get("/todos", async (req,res) => {
+    try {  
+        const allTodos = await pool.query("SELECT * FROM todo");
+        res.json(allTodos);
+    }
+    catch (err){
+        console.error(err.message);
+    }
+});
 //Get A Todo
+app.get("/todos/:id", async (req,res) => {
+    try {  
+        const {id} = req.params;
+        const todo = await pool.query("SELECT * FROM todo WHERE todo_id = ($1)",[id]);
+        res.json(todo.rows[0]);
+    }
+    catch (err){
+        console.error(err.message);
+    }
+});
 
 //Update A Todo
+app.put("/todos/:id", async (req,res) => {
+    try {  
+        const {id} = req.params;
+        const {description} = req.body;
+        const updateTodo = await pool.query("UPDATE todo SET description = ($1) WHERE todo_id = ($2)", [description,id]);
+        res.json("Todo Was Updated.");
+    }
+    catch (err){
+        console.error(err.message);
+    }
+});
+
 
 //Delete A Todo
+app.delete("/todos/:id", async(req,res) => {
+    try{
+        const {id} = req.params;
+        const todoDelete = await pool.query("DELETE FROM todo where todo_id= ($1)",[id]);
+        res.send(`Successfully Deleted The Value With ID: ${id}`);
+    }
+    catch(err){
+        console.error(err.message);
+    }
+});
 
 
 
