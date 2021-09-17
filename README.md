@@ -8,7 +8,7 @@
 - Get A Specific Today
 
 # Technologies Used
--> PostgreSQL
--> Express JS
--> React
--> NodeJS
+- PostgreSQL
+- Express JS
+- React
+- NodeJS
