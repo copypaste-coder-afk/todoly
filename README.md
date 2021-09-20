@@ -15,3 +15,8 @@
 - Express JS
 - React
 - NodeJS
+
+##Modules Used
+- Nodemon
+- Bootstrap
+- create-react-app
