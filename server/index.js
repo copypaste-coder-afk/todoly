@@ -3,6 +3,8 @@ const express = require ('express');
 const app = express();
 const cors = require('cors');
 const pool = require('./db');
+const jwt_auth = require('./jwt_db');
+const { emptyQuery } = require('pg-protocol/dist/messages');
 
 //Middleware
 app.use(cors());
@@ -72,9 +74,64 @@ app.delete("/todos/:id", async(req,res) => {
 });
 
 
+//This is where JWT Authorization Starts
+app.post("/register", async (req,res) => {
+    try {
+        // 1. Destructure req.body (name, email, password)
+        const {name, email, password} = req.body
+        // 2. Check If User Exists (If user exists then throw error)
+        const user = await jwt_auth.query("SELECT * FROM users WHERE user_email = $1", [email]);
+        if (user.rows.length !== 0){
+            res.send(`User Already Exists`);
+            return res.status(401);
+        }
+        else{
+            return res.send(`User Does Not Exist, You Can Proceed With The Registration`);
+        }
+        // 3. Bcrypt the user password
+
+        // 4. Enter the new user inside our database
+
+        // 5. Generating our jwt token.
+    } catch (err) {
+        console.error(err.message);
+    }
+})
+
+//Get Username For Account You Know Email Of.
+app.get("/forgetusername", async (req,res) => {
+     const {email} = req.body;
+     const username = await jwt_auth.query("SELECT user_name FROM users WHERE user_email = $1",[email]);
+     console.log(username)
+     if (username.rows.length !== 0)
+     {
+         const {rows: [{user_name: name}]} = username;
+         res.json(name);
+         //return res.send(`The Username for the email "${email}" is "${name}"`);
+     } 
+     else
+     {
+         return res.send(`No User With Email ${email} Exist In DB`);
+     }
+})
+
+//Get Password For Account You Know Email Of.
+app.get("/forgetpassword/verifyuser", async (req,res) => {
+    const {email} = req.body;
+    const get_security_question = await jwt_auth.query("SELECT user_security_question FROM users where user_email = $1",[email]);
+    if (get_security_question.rows.length === 0)
+    {
+        return res.json(`No User With Email ${email} Exist In DB`);
+    }
+    else
+    {
+        const {rows: [{user_security_question: question}]} = get_security_question;
+        console.log(question);
+        res.json(question);
+    }
+})
 
 //Port For Listening
-// TODO Make It Dynamic Like Define An PORT And If It Not Available On That Then Set On Its Own.
 app.listen(5000,() =>{
     console.log(`Listening at port 5000`);
 })
