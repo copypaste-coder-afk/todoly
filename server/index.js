@@ -5,6 +5,8 @@ const cors = require('cors');
 const pool = require('./db');
 const jwt_auth = require('./jwt_db');
 const { emptyQuery } = require('pg-protocol/dist/messages');
+const bcrypt = require('bcrypt');
+const jwtGenerator = require('../server/utils/jwtGenerator.js');
 
 //Middleware
 app.use(cors());
@@ -75,26 +77,34 @@ app.delete("/todos/:id", async(req,res) => {
 
 
 //This is where JWT Authorization Starts
-app.post("/register", async (req,res) => {
+app.post("/auth/register", async (req,res) => {
     try {
         // 1. Destructure req.body (name, email, password)
-        const {name, email, password} = req.body
+        const {name, email, password , security_question, answer} = req.body
         // 2. Check If User Exists (If user exists then throw error)
         const user = await jwt_auth.query("SELECT * FROM users WHERE user_email = $1", [email]);
         if (user.rows.length !== 0){
-            res.send(`User Already Exists`);
-            return res.status(401);
-        }
-        else{
-            return res.send(`User Does Not Exist, You Can Proceed With The Registration`);
+            return res.status(401).send(`User Already Exists`);
         }
         // 3. Bcrypt the user password
-
+        console.log('I Am At Step 3')
+        const saltRound = 10;
+        const genSalt = await bcrypt.genSalt(saltRound);
+        bcryptPassword =  bcrypt.hash(password, genSalt);
+        
         // 4. Enter the new user inside our database
+        console.log('I Am At Step 4')
+        const response = await jwt_auth.query("INSERT INTO users (user_name, user_email, user_password, user_security_question, user_answer_question) VALUES  ($1,$2,$3,$4,$5) RETURNING *", [name,email,password,security_question,answer]);
 
+        console.log('I Am At Step 5')
         // 5. Generating our jwt token.
+        const {rows: [{user_id: user_id}]} = response;
+        const token = jwtGenerator(user_id);
+        res.json({token});
+
     } catch (err) {
         console.error(err.message);
+        res.status(500).send(`Server Error`);
     }
 })
 
@@ -106,7 +116,7 @@ app.get("/forgetusername", async (req,res) => {
      if (username.rows.length !== 0)
      {
          const {rows: [{user_name: name}]} = username;
-         res.json(name);
+         res.json(name).send(`The Username for the email "${email}" is "${name}"`);
          //return res.send(`The Username for the email "${email}" is "${name}"`);
      } 
      else
