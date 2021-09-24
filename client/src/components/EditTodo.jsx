@@ -1,6 +1,7 @@
 import React, {Fragment, useState} from 'react';
 
 const EditTodo = ({todo}) => {
+    
     const [description, setDescription] = useState(todo.description);
     const updateDescription = async e => {
         e.preventDefault();
@@ -15,7 +16,7 @@ const EditTodo = ({todo}) => {
             }
           );
     
-          window.location = "/";
+          window.location = "/todos";
         } catch (err) {
           console.error(err.message);
         }
