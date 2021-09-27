@@ -3,18 +3,18 @@ import React, { Fragment } from 'react';
 const Login = ({setAuth}) => {
     return (
         <Fragment>
-            <div class="wrapper fadeInDown">
+            <div class="wrapper fadeInDown formAdjustmentLoginPage">
                 <div id="formContent">
-                    {/* <div class="fadeIn first">
-                        <img src="https://img.icons8.com/external-kiranshastry-lineal-color-kiranshastry/64/000000/external-user-management-kiranshastry-lineal-color-kiranshastry-9.png " width="10" height="10" id="icon" alt="User Icon" />
-                    </div> */}
+                <div className="fadeIn first">
+                    <img src="https://telegra.ph/file/1edd0d60ac582f3587e1f.png" id="icon" alt="User Icon" />
+                </div>
                         <form class="formFunctions">
                             <input type="text" id="login" class="fadeIn second" name="login" placeholder="Login"/>
                             <input type="password" id="password" class="fadeIn third" name="password" placeholder="Password"/>
-                            <input type="submit" class="fadeIn fourth" value="Log In"/>
+                            <input type="submit" class="fadeIn fourth" value="Log In" onClick={() => setAuth(true)}/>
                         </form>
                     <div id="formFooter">
-                        <a class="underlineHover" href="#">Forgot Password?</a>
+                        <a class="underlineHover" href="http://localhost:3000/forgotpassword">Forgot Password?</a>
                     </div>
                 </div>
             </div>

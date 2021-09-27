@@ -1,17 +1,17 @@
 import React, { Fragment } from 'react';
+import { Link } from 'react-router-dom';
 
 const welcomePage = () => {
     return (
         <Fragment>
-            <div class="wrapper fadeInDown">
+            <div class="wrapper fadeInDown formAdjustmentWelcomePage">
                 <div id="formContent">
-                        <form class="formFunctions">
-                            <input type="text" id="login" class="fadeIn second" name="login" placeholder="Login"/>
-                            <input type="password" id="password" class="fadeIn third" name="login" placeholder="Password"/>
-                            <input type="submit" class="fadeIn fourth" value="Log In"/>
-                        </form>
-                    <div id="formFooter">
-                        <a class="underlineHover" href="#">Forgot Password?</a>
+                <div className="fadeIn first">
+                    <img src="https://telegra.ph/file/1edd0d60ac582f3587e1f.png" id="icon" alt="User Icon" />
+                </div>
+                    <div className="formFunctions">
+                            <button onClick={() => window.location.href="http://localhost:3000/login"}>Login</button>  
+                        <button onClick={() => window.location.href="http://localhost:3000/register"}>Register</button>
                     </div>
                 </div>
             </div>
