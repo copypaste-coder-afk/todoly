@@ -6,6 +6,7 @@ import {BrowserRouter as Router, Route, Redirect, Switch} from "react-router-dom
 import Login from './components/Login.jsx';
 import Register from './components/Register.jsx';
 import WelcomePage from './components/WelcomePage.jsx';
+import CheckLoginRegister from './components/CheckLoginRegister';
 
 
 function App() {
@@ -28,11 +29,13 @@ function App() {
             <Fragment>
               <InputTodo/>
               <ListTodos/>
+              <CheckLoginRegister/>
             </Fragment>
           }/>
           <Route exact path="/" render={props => <WelcomePage {...props}/>}/>
-          <Route exact path="/login" render={props => !isAuthenticated ? <Login {...props} setAuth = {setAuth}/>  : <Redirect to="/todos"/>}/>
-          <Route exact path="/register" render={props => !isAuthenticated ? <Register {...props} setAuth = {setAuth}/> : <Redirect to="/login"/>}/>
+          <Route exact path="/auth" render={props => <CheckLoginRegister {...props}/>}/>
+          <Route exact path="/login" render={props => !isAuthenticated ? <Login {...props} setAuth = {setAuth}/>  : <Redirect to="/auth"/>}/>
+          <Route exact path="/register" render={props => !isAuthenticated ? <Register {...props} setAuth = {setAuth}/> : <Redirect to="/auth"/>}/>
         </Switch>
       </div>
 

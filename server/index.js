@@ -8,6 +8,7 @@ const { emptyQuery } = require('pg-protocol/dist/messages');
 const bcrypt = require('bcrypt');
 const jwtGenerator = require('../server/utils/jwtGenerator.js');
 const validity = require('../server/middleware/validinfo.js');
+const authorization = require('../server/middleware/authorization.js')
 
 //Middleware
 app.use(cors());
@@ -18,10 +19,8 @@ app.use(express.json());
 //Create A Todo
 app.post("/todos",async (req,res) => {
     try {
-        console.log(req.body);
         const {description} = req.body;
-        const newToDo = await pool.query("INSERT INTO todo (description) VALUES ($1) RETURNING *",[description]);
-        res.send(`Done!`);
+        const newToDo = await pool.query("INSERT INTO todoly (description) VALUES ($1) RETURNING *",[description]);
     }
     catch (err){
         console.error(err.message);
@@ -31,7 +30,7 @@ app.post("/todos",async (req,res) => {
 //Get All Todo
 app.get("/todos", async (req,res) => {
     try {  
-        const allTodos = await pool.query("SELECT * FROM todo");
+        const allTodos = await pool.query("SELECT * FROM todoly");
         res.json(allTodos);
     }
     catch (err){
@@ -42,7 +41,7 @@ app.get("/todos", async (req,res) => {
 app.get("/todos/:id", async (req,res) => {
     try {  
         const {id} = req.params;
-        const todo = await pool.query("SELECT * FROM todo WHERE todo_id = ($1)",[id]);
+        const todo = await pool.query("SELECT * FROM todoly WHERE todo_id = ($1)",[id]);
         res.json(todo.rows[0]);
     }
     catch (err){
@@ -55,7 +54,7 @@ app.put("/todos/:id", async (req,res) => {
     try {  
         const {id} = req.params;
         const {description} = req.body;
-        const updateTodo = await pool.query("UPDATE todo SET description = ($1) WHERE todo_id = ($2)", [description,id]);
+        const updateTodo = await pool.query("UPDATE todoly SET description = ($1) WHERE todo_id = ($2)", [description,id]);
         res.json("Todo Was Updated.");
     }
     catch (err){
@@ -68,7 +67,7 @@ app.put("/todos/:id", async (req,res) => {
 app.delete("/todos/:id", async(req,res) => {
     try{
         const {id} = req.params;
-        const todoDelete = await pool.query("DELETE FROM todo where todo_id= ($1)",[id]);
+        const todoDelete = await pool.query("DELETE FROM todoly where todo_id= ($1)",[id]);
         res.send(`Successfully Deleted The Value With ID: ${id}`);
     }
     catch(err){
@@ -77,7 +76,7 @@ app.delete("/todos/:id", async(req,res) => {
 });
 
 
-//This is where JWT Authorization Starts
+//? This is where JWT Authorization Starts
 app.post("/auth/register",validity, async (req,res) => {
     try {
         // 1. Destructure req.body (name, email, password)
@@ -92,7 +91,7 @@ app.post("/auth/register",validity, async (req,res) => {
         const bcryptPassword =  await bcrypt.hash(password, salt);
         
         // 4. Enter the new user inside our database
-        const response = await jwt_auth.query("INSERT INTO users (user_name, user_email, user_password, user_security_question, user_answer_question) VALUES  ($1,$2,$3,$4,$5) RETURNING *", [name,email,bcryptPassword,security_question,answer]);
+        const response = await jwt_auth.query("INSERT INTO users (user_name, user_email, user_password, user_security_question, user_answer) VALUES  ($1,$2,$3,$4,$5) RETURNING *", [name,email,bcryptPassword,security_question,answer]);
         
         // 5. Generating our jwt token.
         const {rows: [{user_id: user_id}]} = response;
@@ -106,23 +105,18 @@ app.post("/auth/register",validity, async (req,res) => {
 })
 
 
-app.get("/auth/login",validity,async (req,res) => {
+app.post("/auth/login",validity,async (req,res) => {
     try {
-        // 1. Destructure req.body (name, email, password)
+        // * 1. Destructure req.body (name, email, password)
         const {email,password} = req.body;
-        // 2. Check If User Exists (If user exists then throw error)
-        console.log(`I AM Here`)
+        // * 2. Check If User Exists (If user exists then throw error)
         const user = await jwt_auth.query("SELECT * FROM users WHERE user_email = $1", [email]);
-        console.log(`Just Crossed The Query`)
         if (user.rows.length !== 0){
             const {rows: [{user_password: password_verity}]} = user
             const passwordvalidity = await bcrypt.compare(password,password_verity)
-            console.log(password,password_verity,passwordvalidity);
             if (passwordvalidity)
             {
-                res.status(200).send(`Login Successful`)
-                const {rows: [{user_id: user_id}]} = passwordvalidity;
-                console.log(user_id)
+                const {rows: [{user_id: user_id}]} = user;
                 const token = jwtGenerator(user_id);
                 res.json({token});
             }
@@ -140,11 +134,10 @@ app.get("/auth/login",validity,async (req,res) => {
         res.status(500).send(`Server Error`);
     }
 })
-//Get Username For Account You Know Email Of.
+//? Get Username For Account You Know Email Of.
 app.get("/forgetusername", async (req,res) => {
      const {email} = req.body;
      const username = await jwt_auth.query("SELECT user_name FROM users WHERE user_email = $1",[email]);
-     console.log(username)
      if (username.rows.length !== 0)
      {
          const {rows: [{user_name: name}]} = username;
@@ -157,7 +150,7 @@ app.get("/forgetusername", async (req,res) => {
      }
 })
 
-//Get Password For Account You Know Email Of.
+//? Get Password For Account You Know Email Of.
 app.get("/forgetpassword/verifyuser", async (req,res) => {
     const {email} = req.body;
     const get_security_question = await jwt_auth.query("SELECT user_security_question FROM users where user_email = $1",[email]);
@@ -168,12 +161,25 @@ app.get("/forgetpassword/verifyuser", async (req,res) => {
     else
     {
         const {rows: [{user_security_question: question}]} = get_security_question;
-        console.log(question);
         res.json(question);
     }
 })
 
-//Port For Listening
+app.post("/auth",authorization,async (req,res) => {
+    try {
+        const user = await pool.query(
+          "SELECT user_name FROM users WHERE user_id = $1",
+          [req.user] 
+        ); 
+        
+        res.json(user.rows[0]);
+      } catch (err) {
+        console.error(err.message);
+        res.status(500).send("Server error");
+      }
+    });
+
+//! Port For Listening
 app.listen(5000,() =>{
     console.log(`Listening at port 5000`);
 })

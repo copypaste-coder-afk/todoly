@@ -5,8 +5,6 @@
     }
   
     if (req.path === "/auth/register") {
-      console.log(!email.length);
-      console.log([name, email, password, security_question, answer].every(Boolean));
       if (![name, email, password, security_question, answer].every(Boolean)) {
         return res.status(401).json("Missing Credentials");
       } else if (!validEmail(email)) {
