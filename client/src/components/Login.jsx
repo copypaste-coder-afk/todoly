@@ -33,18 +33,18 @@ const Login = ({setAuth}) => {
 
     return (
         <Fragment>
-            <div class="wrapper fadeInDown formAdjustmentLoginPage">
+            <div className="wrapper fadeInDown formAdjustmentLoginPage">
                 <div id="formContent">
                 <div className="fadeIn first">
                     <img src="https://telegra.ph/file/1edd0d60ac582f3587e1f.png" id="icon" alt="User Icon" />
                 </div>
-                        <form class="formFunctions" onSubmit={onSubmitForm}>
+                        <form className="formFunctions" onSubmit={onSubmitForm}>
                         <input type="email" id="email" className="fadeIn second" name="email" placeholder="Email" value={email} onChange = {(e) => onChange(e)}/>
                         <input type="password" id="password" className="fadeIn third" name="password" placeholder="Password" value={password} onChange = {(e) => onChange(e)}/>
                             <button type="submit" className="fadeIn fourth">Login</button>
                         </form>
                     <div id="formFooter">
-                        <a class="underlineHover" href="http://localhost:3000/forgotpassword">Forgot Password?</a>
+                        <a className="underlineHover" href="http://localhost:3000/forgotpassword">Forgot Password?</a>
                     </div>
                 </div>
             </div>

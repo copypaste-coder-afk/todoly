@@ -1,22 +1,39 @@
 import './App.css';
 import InputTodo from './components/InputTodo.jsx';
 import ListTodos from './components/ListTodo.jsx';
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import {BrowserRouter as Router, Route, Redirect, Switch} from "react-router-dom";
 import Login from './components/Login.jsx';
 import Register from './components/Register.jsx';
 import WelcomePage from './components/WelcomePage.jsx';
-import CheckLoginRegister from './components/CheckLoginRegister';
 
 
 function App() {
 
+  const checkAuthenticated = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/auth", {
+        method: "POST",
+        headers: { token: localStorage.token }
+      });
+
+      const parseRes = await res.json();
+
+      parseRes === true ? setIsAuthenticated(true) : setIsAuthenticated(false);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
+  useEffect(() => {
+    checkAuthenticated();
+  }, []);
+
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const setAuth = (boolean) => {
+  const setAuth = boolean => {
     setIsAuthenticated(boolean);
-  }
-
+  };
 
   return (
     <Fragment>
@@ -25,17 +42,16 @@ function App() {
       {/* <InputTodo/>
       <ListTodos/> */}
         <Switch>
-          <Route path='/todos' render={() =>
-            <Fragment>
-              <InputTodo/>
+          { isAuthenticated === true &&
+            <Route path='/todos' render={() =>  
+            <Fragment> 
+              <InputTodo setAuth = {setAuth}/>
               <ListTodos/>
-              <CheckLoginRegister/>
             </Fragment>
-          }/>
+          }/>}
           <Route exact path="/" render={props => <WelcomePage {...props}/>}/>
-          <Route exact path="/auth" render={props => <CheckLoginRegister {...props}/>}/>
-          <Route exact path="/login" render={props => !isAuthenticated ? <Login {...props} setAuth = {setAuth}/>  : <Redirect to="/auth"/>}/>
-          <Route exact path="/register" render={props => !isAuthenticated ? <Register {...props} setAuth = {setAuth}/> : <Redirect to="/auth"/>}/>
+          <Route exact path="/login" render={props => !isAuthenticated ? <Login {...props} setAuth = {setAuth}/>  : <Redirect to="/todos"/>}/>
+          <Route exact path="/register" render={props => !isAuthenticated ? <Register {...props} setAuth = {setAuth}/> : <Redirect to="/todos"/>}/>
         </Switch>
       </div>
 

@@ -1,8 +1,9 @@
 import React, { Fragment, useState } from 'react';
-import { toast } from "react-toastify";
 
-const InputTodo = () => {
+const InputTodo = ({setAuth}) => {
+  
   const [description, setDescription] = useState("");
+
   const onSubmitForm = async e => {
     e.preventDefault();
     try {
@@ -20,24 +21,24 @@ const InputTodo = () => {
     }
   }
 
-  const logout = async e => {
+  const logout = async (e) => {
     e.preventDefault();
     try {
       localStorage.removeItem("token");
-      //setAuth(false);
-      toast.success("Logout successfully");
+      setAuth(false);
+      window.location = "/login"
     } catch (err) {
       console.error(err.message);
     }
-  };
+  }
 
   return (
     <Fragment>
       <h1 className="text-center my-5">Todo App</h1>
-      <form className="d-flex mt-5" onSubmit={onSubmitForm} >
       <button onClick={e => logout(e)} className="btn btn-primary">
         Logout
       </button>
+      <form className="d-flex mt-5" onSubmit={onSubmitForm} >
         <input
           type="text"
           placeholder="Make a todo task"
