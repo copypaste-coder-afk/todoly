@@ -1,11 +1,18 @@
-import React, { Fragment, useState } from 'react';
+import React, {Fragment, useState} from 'react';
+import { Redirect } from 'react-router';
+import ForgetPassword from './ForgetPassword';
 
-const Login = ({setAuth}) => {
+
+
+ const VerifyUser = ({setAuth}) => {
+
+    let [parseData, setParseData] = useState("")
+    // let [con1, setcon1] = useState(false);
 
     const [inputs,setInputs] = useState({
         email: "",
-        password:""
     })
+ 
 
     const onChange = e => {
         setInputs({...inputs, [e.target.name]: e.target.value});
@@ -14,22 +21,23 @@ const Login = ({setAuth}) => {
     const onSubmitForm = async (e) => {
         try {
             e.preventDefault();
-            const body = {email, password}
+            const body = {email}
             const bodyFile = {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(body)
             }
-            const response = await fetch ("http://localhost:5000/auth/login",bodyFile)
+            const response = await fetch ("http://localhost:5000/forgetpassword/verifyuser",bodyFile)
             const parseRes = await response.json();
-            localStorage.setItem("token",parseRes.token);
-            setAuth(true);
+            setParseData(parseRes)
+            return (
+            <ForgetPassword data ={parseData}/>)
         } catch (err) {
             console.error(err.message);
         }
     }
 
-    const {email,password} = inputs;
+    const {email} = inputs;
 
     return (
         <Fragment>
@@ -40,16 +48,12 @@ const Login = ({setAuth}) => {
                 </div>
                         <form className="formFunctions" onSubmit={onSubmitForm}>
                         <input type="email" id="email" className="fadeIn second" name="email" placeholder="Email" value={email} onChange = {(e) => onChange(e)}/>
-                        <input type="password" id="password" className="fadeIn third" name="password" placeholder="Password" value={password} onChange = {(e) => onChange(e)}/>
-                            <button type="submit" className="fadeIn fourth">Login</button>
+                            <button type="submit" className="fadeIn fourth">Submit</button>
+                            <h1>{parseData}</h1>
                         </form>
-                    <div id="formFooter">
-                        <a className="underlineHover" href="http://localhost:3000/verifyuser">Forgot Password?</a>
-                    </div>
                 </div>
             </div>
         </Fragment>
     )
 }
-
-export default Login;
+export default VerifyUser;

@@ -151,7 +151,7 @@ app.get("/forgetusername", async (req,res) => {
 })
 
 //? Get Password For Account You Know Email Of.
-app.get("/forgetpassword/verifyuser", async (req,res) => {
+app.post("/forgetpassword/verifyuser", async (req,res) => {
     const {email} = req.body;
     const get_security_question = await jwt_auth.query("SELECT user_security_question FROM users where user_email = $1",[email]);
     if (get_security_question.rows.length === 0)
