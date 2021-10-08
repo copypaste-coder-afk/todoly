@@ -1,18 +1,16 @@
 import React, {Fragment, useState} from 'react';
 import { Redirect } from 'react-router';
-import ForgetPassword from './ForgetPassword';
 
 
 
  const VerifyUser = ({setAuth}) => {
 
-    let [parseData, setParseData] = useState("")
     // let [con1, setcon1] = useState(false);
 
     const [inputs,setInputs] = useState({
         email: "",
     })
- 
+    
 
     const onChange = e => {
         setInputs({...inputs, [e.target.name]: e.target.value});
@@ -29,9 +27,11 @@ import ForgetPassword from './ForgetPassword';
             }
             const response = await fetch ("http://localhost:5000/forgetpassword/verifyuser",bodyFile)
             const parseRes = await response.json();
-            setParseData(parseRes)
-            return (
-            <ForgetPassword data ={parseData}/>)
+            localStorage.removeItem("question");
+            localStorage.removeItem("email");
+            localStorage.setItem("question",parseRes);
+            localStorage.setItem("email",email);
+            window.location = "/forgetpassword"
         } catch (err) {
             console.error(err.message);
         }
@@ -49,7 +49,6 @@ import ForgetPassword from './ForgetPassword';
                         <form className="formFunctions" onSubmit={onSubmitForm}>
                         <input type="email" id="email" className="fadeIn second" name="email" placeholder="Email" value={email} onChange = {(e) => onChange(e)}/>
                             <button type="submit" className="fadeIn fourth">Submit</button>
-                            <h1>{parseData}</h1>
                         </form>
                 </div>
             </div>

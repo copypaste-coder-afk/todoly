@@ -8,6 +8,7 @@ import Register from './components/Register.jsx';
 import WelcomePage from './components/WelcomePage.jsx';
 import VerifyUser from './components/VerifyUser';
 import ForgetPassword from './components/ForgetPassword';
+import SetPassword from './components/SetPassword';
 
 
 function App() {
@@ -54,8 +55,9 @@ function App() {
           <Route exact path="/" render={props => <WelcomePage {...props}/>}/>
           <Route exact path="/login" render={props => !isAuthenticated ? <Login {...props} setAuth = {setAuth}/>  : <Redirect to="/todos"/>}/>
           <Route exact path="/register" render={props => !isAuthenticated ? <Register {...props} setAuth = {setAuth}/> : <Redirect to="/todos"/>}/>
-          <Route exact path="/verifyuser" render={() => <VerifyUser/>}/>
-          <Route exact path="/forgetpassword" render={() => <ForgetPassword/>}/>
+          <Route exact path="/verifyuser" render={(props) => <VerifyUser {...props}/>}/>
+          <Route exact path="/forgetpassword" render={(props) => <ForgetPassword {...props}/>}/>
+          <Route exact path="/setpassword" render={(props) => <SetPassword {...props}/>}/>
         </Switch>
       </div>
 

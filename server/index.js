@@ -165,6 +165,13 @@ app.post("/forgetpassword/verifyuser", async (req,res) => {
     }
 })
 
+app.post("/forgetpassword", async (req,res) => {
+    const {question} = req.body;
+    const check_answer = await jwt_auth.query("SELECT user_answer FROM users where user_security_question = $1",[question]);
+        const {rows: [{user_answer: answer}]} = check_answer;
+        res.json(answer);
+})
+
 app.post("/auth",authorization,async (req,res) => {
     try {
         res.json(true);
@@ -174,6 +181,19 @@ app.post("/auth",authorization,async (req,res) => {
         res.status(500).send("Server error");
       }
     });
+
+app.put("/setpassword", async (req,res) => {
+    try {  
+        const {password, email} = req.body;
+        const salt = await bcrypt.genSalt(10);
+        const bcryptPassword =  await bcrypt.hash(password, salt);
+        const updatePassword = await jwt_auth.query("UPDATE users SET user_password = ($1) WHERE user_email = ($2)", [bcryptPassword,email]);
+        res.json("Password Has Been Updated.");
+    }
+    catch (err){
+        console.error(err.message);
+    }
+})
 
 //! Port For Listening
 app.listen(5000,() =>{
