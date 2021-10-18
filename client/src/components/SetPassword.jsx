@@ -18,7 +18,6 @@ import React, { Fragment, useState } from 'react';
             {
                 const body = {password,
                 email:localStorage.email}
-                console.log(body);
                 const bodyFile = {
                 method: "PUT",
                 headers: {"Content-Type": "application/json"},
@@ -27,6 +26,8 @@ import React, { Fragment, useState } from 'react';
                 const response = await fetch ("http://localhost:5000/setpassword",bodyFile)
                 const parseRes = await response.json();
                 console.log(parseRes);
+                localStorage.removeItem("email");
+                window.location = "/login"
             }
             else{
                 throw Error (`Password does not match`);
