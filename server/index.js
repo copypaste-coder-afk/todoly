@@ -149,7 +149,7 @@ app.get("/forgetusername", async (req,res) => {
          return res.send(`No User With Email ${email} Exist In DB`);
      }
 })
-
+ // !Take A Look At This Part, THis Functionality is damaged. 
 //? Get Password For Account You Know Email Of.
 app.post("/forgetpassword/verifyuser", async (req,res) => {
     const {email} = req.body;
