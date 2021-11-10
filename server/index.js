@@ -9,71 +9,14 @@ const bcrypt = require('bcrypt');
 const jwtGenerator = require('../server/utils/jwtGenerator.js');
 const validity = require('../server/middleware/validinfo.js');
 const authorization = require('../server/middleware/authorization.js')
-
+const todoRoutes = require('')
 //Middleware
 app.use(cors());
 app.use(express.json());
 
 //Routes//
 
-//Create A Todo
-app.post("/todos",async (req,res) => {
-    try {
-        const {description} = req.body;
-        const newToDo = await pool.query("INSERT INTO todoly (description) VALUES ($1) RETURNING *",[description]);
-    }
-    catch (err){
-        console.error(err.message);
-    }
-});
 
-//Get All Todo
-app.get("/todos", async (req,res) => {
-    try {  
-        const allTodos = await pool.query("SELECT * FROM todoly");
-        res.json(allTodos);
-    }
-    catch (err){
-        console.error(err.message);
-    }
-});
-//Get A Todo
-app.get("/todos/:id", async (req,res) => {
-    try {  
-        const {id} = req.params;
-        const todo = await pool.query("SELECT * FROM todoly WHERE todo_id = ($1)",[id]);
-        res.json(todo.rows[0]);
-    }
-    catch (err){
-        console.error(err.message);
-    }
-});
-
-//Update A Todo
-app.put("/todos/:id", async (req,res) => {
-    try {  
-        const {id} = req.params;
-        const {description} = req.body;
-        const updateTodo = await pool.query("UPDATE todoly SET description = ($1) WHERE todo_id = ($2)", [description,id]);
-        res.json("Todo Was Updated.");
-    }
-    catch (err){
-        console.error(err.message);
-    }
-});
-
-
-//Delete A Todo
-app.delete("/todos/:id", async(req,res) => {
-    try{
-        const {id} = req.params;
-        const todoDelete = await pool.query("DELETE FROM todoly where todo_id= ($1)",[id]);
-        res.send(`Successfully Deleted The Value With ID: ${id}`);
-    }
-    catch(err){
-        console.error(err.message);
-    }
-});
 
 
 //? This is where JWT Authorization Starts
@@ -149,8 +92,7 @@ app.get("/forgetusername", async (req,res) => {
          return res.send(`No User With Email ${email} Exist In DB`);
      }
 })
- // !Take A Look At This Part, THis Functionality is damaged. 
-//? Get Password For Account You Know Email Of.
+
 app.post("/forgetpassword/verifyuser", async (req,res) => {
     const {email} = req.body;
     const get_security_question = await jwt_auth.query("SELECT user_security_question FROM users where user_email = $1",[email]);
