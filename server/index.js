@@ -2,20 +2,21 @@
 const express = require ('express');
 const app = express();
 const cors = require('cors');
-const pool = require('./db');
 const jwt_auth = require('./jwt_db');
 const { emptyQuery } = require('pg-protocol/dist/messages');
 const bcrypt = require('bcrypt');
 const jwtGenerator = require('../server/utils/jwtGenerator.js');
 const validity = require('../server/middleware/validinfo.js');
 const authorization = require('../server/middleware/authorization.js')
-const todoRoutes = require('')
+const todoRoutes = require('./routes/todoRoutes')
 //Middleware
 app.use(cors());
 app.use(express.json());
 
 //Routes//
 
+// todo ROUTES //
+app.use(todoRoutes)
 
 
 
