@@ -34,7 +34,7 @@ const ListTodos = () => {
   };
 
   useEffect(() => {
-    getTodos();
+    setInterval(() => getTodos(), 1000);
   }, []);
 
   return (

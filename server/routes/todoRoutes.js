@@ -1,14 +1,15 @@
-
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
+const {todoly} = require('../models/todoly.js');
 
 
 //Create A Todo
 router.post("/todos",async (req,res) => {
     try {
         const {description} = req.body;
-        const newToDo = await pool.query("INSERT INTO todoly (description) VALUES ($1) RETURNING *",[description]);
+        const newTodo = await todoly.create({ description: description });
+        // const newToDo = await pool.query("INSERT INTO todoly (description) VALUES ($1) RETURNING *",[description]);
     }
     catch (err){
         console.error(err.message);

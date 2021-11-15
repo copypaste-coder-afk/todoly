@@ -1,5 +1,4 @@
 import React, { Fragment, useState, useEffect } from 'react';
-import reactLoader from 'react-loading';
 
 
 const Register = ({setAuth}) => {
